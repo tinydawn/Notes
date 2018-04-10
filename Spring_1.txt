@@ -1,0 +1,242 @@
+1.Spring简单点说，负责管理项目中所有的对象，可以看成项目所有对象
+的管家。
+2.spring是一个站式框架，意思是说，spring可以完成spring完成，web，service
+和dao层的工作。因为spring的框架性质属于容器性质，所以才能完成相应的功能，
+他里面种有，能完成相应功能的对象。容器中有什么对象，可以完成相应的功能。
+3.spring的核心是IOC（控制反转）和AOP（面向切面编程）
+Spring jdbc ,aop事务，junit测试和支持。
+
+========================================
+4.spring项目的搭建：
+（1）.导入相应的包
+ (2).创建相应的类
+ （3）.注册类，创建xml文件，名字任意，位置任意，建议
+ applicationContext 放在src下面
+=============================================
+5.IOC inverse of Control 反转控制
+（将我们的创建是由开发人员自己维护，包括依赖关系也是自己注入）
+使用spring之后，对象的创建以及依赖关系可以由spring完成创建以及注入
+反转控制就是反转了对象的创建方式，从我们创建反转给了程序（Spring)
+DI:Dependency Injection 依赖注入
+要实现IOC思想要,支持DI
+注入方式：set方法注入
+          构造方法注入
+	  字段注入
+注入类型：值类型注入，8大基本数据类型
+          引用类型注入 对象类型
+========================================
+6.applicationContext 和 BeanFactory(接口）
+（1）BeanFactory接口是最简单的接口，针对原始的接口实现功能比较单一
+BeanFactory接口实现类容器，特点是每次在获得对象才会创建对象。而对于
+applicationContext创建容器对象的时候就会将容器的对象创建出来。
+（2）applicationContext的特点是：每次容器启动时就会创建容器中配置的所有对象
+  在web开发中，使用applicationContext中，在资源匮乏的环境中，可以使用BeanFactory
+ （3）applicationContext两个典型的实现类：
+    从类路径下加载配置文件：ClassPathXmlApplicationContext
+    从磁盘绝对路径下加载配置文件：FileSystemXmlApplicationContext
+ 7.bean元素的配置：
+ bean元素：该元素用来描述需要交给spring容器管理的对象
+           name属性：给被管理对象起一个名字，获得对象时根据该名称获取对象
+	   class属性：被管理对象的完整类名；
+	   id属性：与name属性一模一样，名称可以重复，不能使用特殊字符。
+	   结论:尽量使用nanme属性
+	   applicationContext在加载xml文件的时候会自动src下找文件，如果
+	   在src下的其他包下，要写完全的路径
+ 8.三种对象的创建方式：
+ (1)空参构造方式
+ (2)静态工厂方式（了解）
+ (3)动态工厂方式（了解）
+    <!-- 创建方式一：空参构造 -->
+	<bean name="user" class="com.gump.bean.User" init-method="init" destroy-method="destroy"></bean>
+	<!-- 创建方式二：静态工厂 -->
+	 <bean name="user2" class="com.gump.test.UserFactory" factory-method="createUser"></bean>
+	 <!-- 创建方式三 -->
+	 <bean name="user3" 
+	 factory-bean ="userFactory"
+	 factory-method ="createUser2"></bean>
+	 <bean name="userFactory" class="com.gump.test.UserFactory"></bean>
+ 被加载到Spring容器中的对象每次在容器创建的时候都会创建，即时Factory对象
+ 中的方法也会执行，因为他要创建所有的对象。
+ 9.bean元素的scope的属性：singleton（默认值）（单例对象，在spring容器中只会存在一个实例）
+                          prototype:多例对象，被标识为多例的对象只有在获得的
+			  时候才创建，每次创建都是新的对象。2018/4/1 星期日
+			  request：在web环境中，对象与request的生命周期相同
+			  session：在web环境中，对象与session的生命周期相同
+    对于singleton和prototype来说：绝大多数都是使用默认值singleton，在struts2
+    开发中的action对象应该设置为多例。因为每次请求都对应于一个对象。
+ 10.生命周期属性：
+	配置一个方法作为生命周期初始化方法spring会在对象创建之后立即调用
+	init-method
+	配置一个方法作为生命周期的销毁方法，spring容器在关闭并销毁容器中
+	所有对象钱调用
+	destroy-method
+ 11.模块化配置（导入其他的配置文件）：<import resource="cn/gump/test/demo.xml">
+ 12.spring的属性注入：
+		set方法注入（重点）
+		构造函数注入（掌握）
+		p名称空间注入（了解）
+		spel注入(了解）
+ （1）set方法注入：
+   对于值类型：使用<property name="" value=""></property>
+   对于对象类型的：一：要将对象加入容器。二：使用<property name="" ref=""></property>
+   注意当配置文件出错的时候，不会报错，但是会打印不出相应的对象.
+  (2) 构造函数方法注入:
+  eg:<constructor-arg name="" value="" index="" type=""></constructor-arg>
+     <constructor-arg name="" ref=""></constructor-arg>
+   index确定参数的位置，type确定参数的类型。
+  13.p名称空间注入：
+  第一步：导入p名称空间 xmlns:p="http://www.springframework.org/schema/p" 
+  第二步：值类型：p:属性名="值"
+          对象类型：p:属性名-ref="应用"
+  14.spel Spring Expression Language 就是Spring表达式语言
+  <property name="name" value="#{user.name}"></property>
+  15.复杂类型注入
+  数组：<property name="arr">
+	<array>
+	   <value></value>
+	   .......
+	   <ref bean=""></ref>
+	 </array>
+	</property>
+  集合：<property name="list">
+	<list>
+	   <value></value>
+	   .......
+	   <ref bean=""></ref>
+	 </list>
+	</property>
+  map类型：
+  <property name="map">
+			<map>
+				<entry key="url" value="jdbc:mysql"></entry>
+				<entry key="user" value-ref="user3"></entry>
+				<entry key-ref="user3" value-ref="user4"></entry>
+			</map>
+		</property>
+  
+    properties注入：
+    <property name="prop>
+	<props>
+	  <prop key=""></prop>
+	..............
+	</props>
+    </property>
+  16.对于property有提示说明，其在这个类中必有set方法。
+  17.前处理bean和后处理bean不明白
+  Spring：
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx3CgsZV1pRAtD21Kcfd185iQK
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx0Td8zY0vsACH2DpBrq2l9-b6
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx11eSz6302Q0z2_bT_I1qo-9F
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx2AOvl-0Na4Bv2hhl1O1ejMYf
+
+
+MyBatis
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx10ARam0He4hL2zg7c82gdWWN
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx2BCw-q0xIACG2Bt6z52p33y_
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx0r5c-p2_pQLG2Sc-MM0YYPK9
+
+SpringMVC:
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx2pHqey2X2kP42PaheA11Krix
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx1lX0VY17sQr42UczdF1wgUj7
+http://5c6acb45.wiz03.com/share/s/1sqIJ53EcAjA2jek-M0R2iAx1zqV7527gk3g2eHZGy2R0fIz
+18.Bean生命周期：
+	1. 实例化一个Bean，也就是我们通常说的new
+
+	2. 按照Spring上下文对实例化的Bean进行配置，也就是IOC注入
+
+	3. 如果这个Bean实现了BeanNameAware接口，会调用它实现的setBeanName(String beanId)方法，此处传递的是Spring配置文件中Bean的ID
+
+	4. 如果这个Bean实现了BeanFactoryAware接口，会调用它实现的setBeanFactory()，传递的是Spring工厂本身（可以用这个方法获取到其他Bean）
+
+	5. 如果这个Bean实现了ApplicationContextAware接口，会调用setApplicationContext(ApplicationContext)方法，传入Spring上下文，该方式同样可以实现步骤4，但比4更好，以为ApplicationContext是BeanFactory的子接口，有更多的实现方法
+
+	6. 如果这个Bean关联了BeanPostProcessor接口，将会调用postProcessBeforeInitialization(Object obj, String s)方法，BeanPostProcessor经常被用作是Bean内容的更改，并且由于这个是在Bean初始化结束时调用After方法，也可用于内存或缓存技术
+
+	7. 如果这个Bean在Spring配置文件中配置了init-method属性会自动调用其配置的初始化方法
+
+	8. 如果这个Bean关联了BeanPostProcessor接口，将会调用postAfterInitialization(Object obj, String s)方法
+
+	注意：以上工作完成以后就可以用这个Bean了，那这个Bean是一个single的，所以一般情况下我们调用同一个ID的Bean会是在内容地址相同的实例
+
+	9. 当Bean不再需要时，会经过清理阶段，如果Bean实现了DisposableBean接口，会调用其实现的destroy方法
+
+	10. 最后，如果这个Bean的Spring配置中配置了destroy-method属性，会自动调用其配置的销毁方法
+
+19.Spring在加载对象的时候，如果定义了其他的构造方法，则必须制定空参的构造方法。
+20.postprocess 后处理
+21.在WEB环境中使用Spring容器
+	1>导包 4+2+1(spring-web)
+	2>在web.xml中配置listener => ContextLoaderListener
+		|-配置参数,指定spring配置路径 
+	3>在Action中,使用工具类获得容器.
+		|-WebApplicationContextUtils.getWebApplicationContext(ServletContext sc)
+22.application.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd ">
+    <!--set方法注入-->
+    <bean id="BeanNamesAware"  name="user" class="com.gump.demo.User" init-method="init" destroy-method="destroy">
+        <property name="name" value="woshigeshuige"></property>
+        <property name="age" value="125550"></property>
+        <property name="car" ref="car"></property>
+    </bean>
+    <bean name="car" class="com.gump.demo.Car">
+        <property name="cname" value="路虎"></property>
+        <property name="color" value="蓝色"></property>
+    </bean>
+    <!--====================构造方法注入=========================-->
+    <!--说明：index用来制定参数的顺序,String用来制定参数的类型-->
+    <bean name="user1"  class="com.gump.demo.User">
+        <constructor-arg name="name" value="yang" index="1" type="java.lang.String"></constructor-arg>
+        <constructor-arg name="car"  ref="car" index="0"></constructor-arg>
+    </bean>
+    <!--===========================复杂类型注入==================================-->
+    <bean name="collectionbean" class="com.gump.demo.CollectionBean">
+        <property name="arr">
+            <array>
+                <value>tinydawn</value>
+                <value>12</value>
+                <ref bean="user"></ref>
+            </array>
+        </property>
+        <property name="list">
+            <list>
+                <value>tinydawnlist</value>
+                <value>22</value>
+                <ref bean="car"></ref>
+            </list>
+        </property>
+        <property name="map">
+            <map>
+                <entry key="url" value="jdbc:mydsqlkdfkj"></entry>
+                <entry key="user" value-ref="user"></entry>
+                <entry key-ref="user" value-ref="car"></entry>
+            </map>
+        </property>
+        <property name="prop">
+            <props>
+                <prop key="classdriver">mysql.jdbc</prop>
+                <prop key="dkf">dfj</prop>
+            </props>
+        </property>
+    </bean>
+    <!--静态工厂获取bean实例-->
+    <bean name="user2" class="com.gump.demo.BeanFactory" factory-method="getUser">
+        <property name="name" value="静态工厂注入"></property>
+        <property name="age" value="11"></property>
+    </bean>
+    <!--动态工厂获取bean实例-->
+    <!--调用空参函数-->
+    <bean name="beanfactory" class="com.gump.demo.BeanFactory"></bean>
+    <bean name="user3" factory-bean="beanfactory" factory-method="getUsers"></bean>
+    <!--p命名空间注入-->
+    <bean name="user4" class="com.gump.demo.User" p:name="hell" p:age="12" p:car-ref="car"></bean>
+    <!--spel注入本质还是set注入，利用el表达式，获取已注册的对象的属性值-->
+       <!--配置处理bean,不需要name和ID,全局生效-->
+      <bean class="com.gump.demo.MyPostProcess"></bean>
+</beans>
+	
+
+
